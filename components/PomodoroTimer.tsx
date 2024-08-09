@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 
 const PomodoroTimer = () => {
@@ -45,6 +45,16 @@ const PomodoroTimer = () => {
     }
   };
 
+  const logTime = useCallback(() => {
+    if (taskId && !isBreak) {
+      const timeSpent = 1500 - time;
+      if (timeSpent > 0) {
+        addTimeToTask(taskId, timeSpent, 'Pomodoro'); // Log the time spent during focus session
+        console.log("Time logged:", { taskId, timeSpent });
+      }
+    }
+  }, [taskId, isBreak, time, addTimeToTask]);
+
   const startBreak = () => {
     if (!isBreak) {
       setIsBreak(true);
@@ -55,16 +65,6 @@ const PomodoroTimer = () => {
     }
     setIsActive(false);
     logTime();  // Log time when switching to break
-  };
-
-  const logTime = () => {
-    if (taskId && !isBreak) {
-      const timeSpent = 1500 - time;
-      if (timeSpent > 0) {
-        addTimeToTask(taskId, timeSpent, 'Pomodoro'); // Log the time spent during focus session
-        console.log("Time logged:", { taskId, timeSpent });
-      }
-    }
   };
 
   useEffect(() => {
@@ -93,7 +93,7 @@ const PomodoroTimer = () => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, time]);
+  }, [isActive, time, isBreak, logTime]);
 
   return (
     <div className='timer pomodoro-timer'>
