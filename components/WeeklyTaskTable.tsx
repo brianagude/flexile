@@ -1,15 +1,16 @@
 "use client"
-// components/WeeklyTaskTable.tsx
 
 import { useTaskContext } from '../context/TaskContext';
 import { useState } from 'react';
-import { addDays, format, startOfWeek } from 'date-fns';
+import { addDays, format } from 'date-fns';
+import ArrowRight from '@/components/icon-arrow-right';
+import ArrowLeft from '@/components/icon-arrow-left';
 
-const WeeklyTaskTable = () => {
-  const { tasks, updateTask, deleteTask } = useTaskContext();
-  const [currentWeek, setCurrentWeek] = useState(startOfWeek(new Date(), { weekStartsOn: 0 }));
+const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }) => {
+  const { tasks, updateTask, addTask, deleteTask } = useTaskContext();
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskLogs, setNewTaskLogs] = useState<{ [key: string]: string }>({});
+  const [inputErrors, setInputErrors] = useState<{ [key: string]: boolean }>({});
 
   const getWeekDays = (startDate) => {
     return Array.from({ length: 7 }).map((_, index) => addDays(startDate, index));
@@ -23,12 +24,25 @@ const WeeklyTaskTable = () => {
 
   const handleTaskNameChange = (id, newName) => {
     const currentDate = new Date().toISOString().split('T')[0];
-    updateTask(id, newName, currentDate, 0); // Update task name, keeping the date and time the same
+    updateTask(id, newName, currentDate, 0); // Update task name
   };
 
-  const handleTimeChange = (id, date, newTime) => {
-    const timeInSeconds = newTime.split(':').reduce((acc, time) => (60 * acc) + +time, 0);
-    updateTask(id, '', date, timeInSeconds); // Update task time, keeping the name the same
+  const handleTimeBlur = (id, date, newTime, currentName) => {
+    const timeParts = newTime.split(':');
+    const inputKey = `${id}-${date}`;
+
+    if (timeParts.length === 2 && timeParts.every(part => /^\d+$/.test(part))) {
+      const [hours, minutes] = timeParts;
+      if (!isNaN(hours) && !isNaN(minutes)) {
+        const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+        updateTask(id, currentName, date, timeInSeconds);
+        setInputErrors(prev => ({ ...prev, [inputKey]: false })); // Remove error class if valid
+      } else {
+        setInputErrors(prev => ({ ...prev, [inputKey]: true })); // Add error class if invalid
+      }
+    } else {
+      setInputErrors(prev => ({ ...prev, [inputKey]: true })); // Add error class if invalid
+    }
   };
 
   const handleNewTaskChange = (e) => {
@@ -36,35 +50,50 @@ const WeeklyTaskTable = () => {
   };
 
   const handleNewTaskTimeChange = (date, newTime) => {
-    setNewTaskLogs({ ...newTaskLogs, [date]: newTime });
+    setNewTaskLogs((prevLogs) => ({ ...prevLogs, [date]: newTime }));
   };
 
   const addNewTask = () => {
     if (newTaskName.trim() !== '') {
-      const timeInSeconds = Object.keys(newTaskLogs).reduce((acc, date) => {
-        const time = newTaskLogs[date].split(':').reduce((acc, time) => (60 * acc) + +time, 0);
-        updateTask(Date.now().toString(), newTaskName, date, time);
-        return acc + time;
-      }, 0);
+      const taskId = Date.now().toString();
+      addTask(newTaskName);
+
+      // Save each time entry to the task
+      Object.keys(newTaskLogs).forEach((date) => {
+        const timeParts = newTaskLogs[date].split(':');
+        if (timeParts.length === 2 && timeParts.every(part => /^\d+$/.test(part))) {
+          const [hours, minutes] = timeParts;
+          if (!isNaN(hours) && !isNaN(minutes)) {
+            const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+            updateTask(taskId, newTaskName, date, timeInSeconds);
+          }
+        }
+      });
+
+      // Reset the input fields for the new task row
       setNewTaskName('');
       setNewTaskLogs({});
     }
   };
 
+  const formatTime = (timeInSeconds) => {
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  };
+
   return (
-    <div>
-      <button onClick={() => changeWeek(-1)}>Previous Week</button>
-      <button onClick={() => changeWeek(1)}>Next Week</button>
+    <div className='task-table'>
       <table>
         <thead>
           <tr>
-            <th>Task</th>
+            <th><button onClick={() => changeWeek(-1)}><ArrowLeft/></button></th>
             {weekDays.map((day) => (
-              <th key={day.toISOString()} style={{ backgroundColor: format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') ? 'yellow' : 'white' }}>
-                {format(day, 'EEEE, MMM d')}
+              <th key={day.toISOString()}>
+                <span>{format(day, 'EEE')}</span> <span>{format(day, 'd')}</span>
               </th>
             ))}
-            <th>Delete</th>
+            <th><button onClick={() => changeWeek(1)}><ArrowRight/></button></th>
           </tr>
         </thead>
         <tbody>
@@ -78,13 +107,20 @@ const WeeklyTaskTable = () => {
                 />
               </td>
               {weekDays.map((day) => {
-                const log = task.dailyLogs.find(log => log.date === format(day, 'yyyy-MM-dd'));
+                const date = format(day, 'yyyy-MM-dd');
+                const log = task.workInstances ? task.workInstances.find(instance => instance.startTime.startsWith(date)) : undefined;
+                const timeValue = log ? formatTime(log.duration) : '';
+                const inputKey = `${task.id}-${date}`;
+                const inputClass = inputErrors[inputKey] ? 'error' : '';
+
                 return (
                   <td key={day.toISOString()}>
                     <input
                       type="text"
-                      value={log ? new Date(log.time * 1000).toISOString().substr(11, 8) : '00:00:00'}
-                      onChange={(e) => handleTimeChange(task.id, format(day, 'yyyy-MM-dd'), e.target.value)}
+                      placeholder="HH:MM"
+                      defaultValue={timeValue}
+                      className={inputClass}
+                      onBlur={(e) => handleTimeBlur(task.id, date, e.target.value, task.name)}
                     />
                   </td>
                 );
@@ -101,32 +137,37 @@ const WeeklyTaskTable = () => {
                 placeholder="New Task"
                 value={newTaskName}
                 onChange={handleNewTaskChange}
+                onBlur={addNewTask} // Automatically save when the input loses focus
               />
             </td>
             {weekDays.map((day) => (
               <td key={day.toISOString()}>
                 <input
                   type="text"
-                  placeholder="00:00:00"
+                  placeholder="HH:MM"
+                  disabled={!newTaskName} // Disable input if task name is not defined
                   value={newTaskLogs[format(day, 'yyyy-MM-dd')] || ''}
                   onChange={(e) => handleNewTaskTimeChange(format(day, 'yyyy-MM-dd'), e.target.value)}
                 />
               </td>
             ))}
-            <td>
-              <button onClick={addNewTask}>+</button>
-            </td>
+            <td></td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
-            <td>Total</td>
+            <td></td>
             {weekDays.map((day) => {
               const totalTime = tasks.reduce((acc, task) => {
-                const log = task.dailyLogs.find(log => log.date === format(day, 'yyyy-MM-dd'));
-                return acc + (log ? log.time : 0);
+                const date = format(day, 'yyyy-MM-dd');
+                const dailyTotal = task.workInstances
+                  ? task.workInstances
+                      .filter(instance => instance.startTime.startsWith(date))
+                      .reduce((sum, instance) => sum + instance.duration, 0)
+                  : 0;
+                return acc + dailyTotal;
               }, 0);
-              return <td key={day.toISOString()}>{new Date(totalTime * 1000).toISOString().substr(11, 8)}</td>;
+              return <td key={day.toISOString()}>{totalTime > 0 ? formatTime(totalTime) : '—'}</td>;
             })}
             <td></td>
           </tr>

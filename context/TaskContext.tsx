@@ -1,23 +1,24 @@
 "use client"
 // context/TaskContext.tsx
 
-import { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 
-interface DailyLog {
-  date: string;
-  time: number;
+interface WorkInstance {
+  startTime: string;
+  duration: number;
+  timerType: 'Pomodoro' | 'Regular';
 }
 
 interface Task {
   id: string;
   name: string;
   totalTime: number;
-  dailyLogs: DailyLog[];
+  workInstances: WorkInstance[];
 }
 
 interface TaskContextType {
   tasks: Task[];
-  addTimeToTask: (name: string, time: number) => void;
+  addTask: (name: string) => void;
   updateTask: (id: string, name: string, date: string, time: number) => void;
   deleteTask: (id: string) => void;
 }
@@ -25,57 +26,41 @@ interface TaskContextType {
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
-  const initialTasks: Task[] = [
-    { id: '1', name: 'Task 1', totalTime: 3600, dailyLogs: [{ date: '2024-08-07', time: 3600 }] },
-    { id: '2', name: 'Task 2', totalTime: 5400, dailyLogs: [{ date: '2024-08-07', time: 5400 }] },
-    { id: '3', name: 'Task 3', totalTime: 1800, dailyLogs: [{ date: '2024-08-07', time: 1800 }] },
-  ];
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const storedTasks = localStorage.getItem('tasks');
+    return storedTasks ? JSON.parse(storedTasks) : [];
+  });
 
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
-  const addTimeToTask = (name: string, time: number) => {
-    const currentDate = new Date().toISOString().split('T')[0];
-    setTasks((prevTasks) => {
-      const existingTask = prevTasks.find((task) => task.name === name);
-      if (existingTask) {
-        existingTask.totalTime += time;
-        const dailyLog = existingTask.dailyLogs.find((log) => log.date === currentDate);
-        if (dailyLog) {
-          dailyLog.time += time;
-        } else {
-          existingTask.dailyLogs.push({ date: currentDate, time });
-        }
-        return [...prevTasks];
-      } else {
-        const newTask: Task = {
-          id: Date.now().toString(),
-          name: name,
-          totalTime: time,
-          dailyLogs: [{ date: currentDate, time }],
-        };
-        return [...prevTasks, newTask];
-      }
-    });
+  const addTask = (name: string) => {
+    const newTask: Task = {
+      id: Date.now().toString(),
+      name,
+      totalTime: 0,
+      workInstances: [], // Ensure workInstances is initialized
+    };
+    setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
   const updateTask = (id: string, name: string, date: string, time: number) => {
     setTasks((prevTasks) => {
-      const taskIndex = prevTasks.findIndex((task) => task.id === id);
-      if (taskIndex !== -1) {
-        const task = prevTasks[taskIndex];
-        task.name = name;
-        const dailyLog = task.dailyLogs.find((log) => log.date === date);
-        if (dailyLog) {
-          dailyLog.time = time;
-        } else {
-          task.dailyLogs.push({ date, time });
+      return prevTasks.map((task) => {
+        if (task.id === id) {
+          task.name = name;
+          task.workInstances = task.workInstances || []; // Ensure workInstances is defined
+          const workInstance = task.workInstances.find(instance => instance.startTime.startsWith(date));
+          if (workInstance) {
+            workInstance.duration = time;
+          } else {
+            task.workInstances.push({ startTime: `${date}T00:00:00`, duration: time, timerType: 'Regular' });
+          }
+          task.totalTime = task.workInstances.reduce((acc, instance) => acc + instance.duration, 0);
         }
-        task.totalTime = task.dailyLogs.reduce((acc, log) => acc + log.time, 0);
-        const updatedTasks = [...prevTasks];
-        updatedTasks[taskIndex] = task;
-        return updatedTasks;
-      }
-      return prevTasks;
+        return task;
+      });
     });
   };
 
@@ -84,7 +69,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <TaskContext.Provider value={{ tasks, addTimeToTask, updateTask, deleteTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask }}>
       {children}
     </TaskContext.Provider>
   );

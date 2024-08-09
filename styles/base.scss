@@ -1,0 +1,51 @@
+.btn {
+  color: $white;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: capitalize;
+  display: flex;
+  min-width: 200px;
+  padding: 12px 32px;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  border-radius: 24px;
+  border: 1px solid $black;
+  background: $black;
+
+  &:hover {
+    border: 1px solid $blue;
+    background: $blue;
+  }
+
+  &-ghost {
+    background: transparent;
+    color: $black;
+
+    &:hover {
+      color: $blue;
+      border: 1px solid $blue;
+    }
+  }
+
+  &-icon {
+    background: transparent;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      color: $gray-light;
+    }
+
+    &:hover {
+      background: $blue;
+
+      svg { color: $white; }
+    }
+  }
+}

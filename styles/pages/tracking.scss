@@ -1,0 +1,255 @@
+@import '../reset.scss';
+@import '../colors.scss';
+@import '../mixins.scss';
+
+.page-header {
+  background: $gray-light;
+  width: 100%;
+  padding: 16px;
+  border-bottom: 1px solid $gray;
+
+  @include bp(md) {
+    padding: 24px;
+  }
+
+  @include bp(lg) {
+    padding: 24px 64px;
+  }
+
+  .container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+}
+
+.page-wrapper {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @include bp(md) {
+    padding: 24px;
+    gap: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @include bp(xl) {
+    padding: 24px 64px;
+  }
+}
+
+.stat {
+  border: 1px solid $gray;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+
+  & + .stat { margin-top: 12px; }
+
+  @include bp(md) {
+    padding: 24px;
+  }
+
+  h3 {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1;
+    text-transform: capitalize;
+  }
+
+  p {
+    color: $gray;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    margin-top: 4px;
+  }
+}
+
+.timer-wrapper {
+  @include bp(md){
+    grid-column: 1 / span 2;
+  }
+
+  @include bp(xl){
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+.timer-header {
+  border-radius: 8px;
+  border: 1px solid $gray;
+  overflow: hidden;
+  color: $black;
+  display: flex;
+  align-items: center;
+
+  button {
+    padding: 12px 32px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: capitalize;
+
+    &:hover:not(.highlight) {
+      background: $gray-light;
+      // color: $white;
+    }
+  }
+
+  .highlight {
+    background: $black;
+    color: $white;
+  }
+}
+
+.timer {
+  border: 1px solid $gray;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 12px;
+  // min-height: 100%;
+
+  @include bp(md) {
+    padding: 24px;
+    margin-top: 16px;
+  }
+
+  input {
+    margin-top: 12px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid $gray;
+    padding: 12px;
+  }
+}
+
+.countdown-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.countdown {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+  text-transform: capitalize;
+  text-align: center;
+
+  span {
+    display: block;
+    color: $gray;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+    margin-top: 4px;
+  }
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+
+  & > * {
+    color: $black;
+    font-size: 14px;
+    text-transform: capitalize;
+    border-radius: 4px;
+    border: 1px solid $gray;
+    padding: 12px;
+
+    &:hover {
+      background: $gray-light;
+    }
+
+    &:disabled {
+      background: $gray-lightest;
+      border: $gray-med;
+      color: $gray-med;
+      cursor: not-allowed;
+
+      &:hover {
+        background: $gray-lightest;
+        border: $gray-med;
+        color: $gray-med;
+      }
+    }
+  }
+}
+
+.task-table {
+  border: 1px solid $gray;
+  border-radius: 16px;
+
+  @include bp(md) {
+    grid-column: 1 / span 2;
+  }
+}
+
+table {
+  width: 100%;
+  & > * { width: 100%; }
+}
+
+thead {
+  tr { border-top: none; }
+}
+
+tr {
+  display: grid;
+  grid-template-columns: 1fr repeat(7, 80px) 40px;
+  border-top: 1px solid $gray;
+  padding: 12px;
+  gap: 24px;
+}
+
+th {
+  color: $gray;
+  text-align: center;
+  font-size: 14px;
+  line-height: normal;
+  text-transform: capitalize;
+  display: flex;
+  flex-direction: column;
+  
+  gap: 12px;
+}
+
+td {
+  text-align: center; 
+  input { 
+    width: 100%; 
+    border-radius: 4px;
+    border: 1px solid $gray;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.error { border: 1px solid red; }
+  }
+}
+
+// .highlight-column {
+//   background-color: $gray-light;
+// }
+

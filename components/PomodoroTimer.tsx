@@ -47,7 +47,6 @@ const PomodoroTimer = () => {
     }
 
     if (time === 0) {
-      clearInterval(interval);
       if (isBreak) {
         alert('Break over! Time to get back to work.');
         setIsBreak(false);
@@ -59,13 +58,28 @@ const PomodoroTimer = () => {
         setTime(300);
       }
       setIsActive(false);
+      clearInterval(interval);
     }
 
     return () => clearInterval(interval);
   }, [isActive, time]);
 
   return (
-    <div>
+    <div className='timer pomodoro-timer'>
+      <div className='countdown-buttons'>
+        <div className='countdown'>
+          {new Date(time * 1000).toISOString().substr(14, 5)}
+          <span>{isBreak ? 'Break' : 'Focus'}</span>
+        </div>
+        <div className='buttons'>
+          <button onClick={toggleTimer} disabled={!taskName}>
+            {isActive ? 'Pause' : 'Start'}
+          </button>
+          <button onClick={startBreak} disabled={!taskName}>
+            {isBreak ? 'Focus' : 'Break'}
+          </button>
+        </div>
+      </div>
       <input
         type="text"
         placeholder="What are you working on?"
@@ -77,14 +91,7 @@ const PomodoroTimer = () => {
         {tasks.map((task) => (
           <option key={task.id} value={task.name} />
         ))}
-      </datalist>
-      <div>{new Date(time * 1000).toISOString().substr(14, 5)}</div>
-      <button onClick={toggleTimer} disabled={!taskName}>
-        {isActive ? 'Pause' : 'Start'}
-      </button>
-      <button onClick={startBreak} disabled={!taskName}>
-        {isBreak ? 'Focus' : 'Break'}
-      </button>
+      </datalist>      
     </div>
   );
 };
