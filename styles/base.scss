@@ -2,8 +2,6 @@ body {
   position: relative;
   width: 100vw;
   color: $black;
-  font-size: 14px;
-  line-height: 1.2;
 
   @include bp(lg) {
     display: flex;
@@ -68,14 +66,19 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 12px;
+    gap: 16px;
     color: $gray-light;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
     line-height: 1;
     text-transform: capitalize;
     text-align: left;
     padding: 0;
+
+    svg, img { 
+      width: 20px; 
+      height: 20px;
+    }
 
     &.highlight { color: $white; }
 

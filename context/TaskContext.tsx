@@ -18,7 +18,7 @@ interface Task {
 interface TaskContextType {
   tasks: Task[];
   addTimeToTask: (id: string, time: number, timerType: 'Pomodoro' | 'Regular') => void;
-  addTask: (name: string) => Task;
+  addTask: (name: string) => Task | null;
   updateTask: (id: string, name: string, date: string, time: number) => void;
   deleteTask: (id: string) => void;
 }
@@ -35,10 +35,13 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  const addTask = (name: string): Task => {
+  const addTask = (name: string): Task | null => {
+    const trimmedName = name.trim();
+    if (trimmedName === '') return null;
+
     const newTask: Task = {
       id: Date.now().toString(),
-      name,
+      name: trimmedName,
       totalTime: 0,
       workInstances: [],
     };
@@ -73,13 +76,15 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         return task;
       });
     });
+
+    console.log('add time: ', tasks);
   };
 
   const updateTask = (id: string, name: string, date: string, time: number) => {
     setTasks((prevTasks) => {
       return prevTasks.map((task) => {
         if (task.id === id) {
-          task.name = name;
+          task.name = name.trim() !== '' ? name : task.name;
           task.workInstances = task.workInstances || [];
           const workInstance = task.workInstances.find(instance => instance.startTime.startsWith(date));
           if (workInstance) {
@@ -92,10 +97,13 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         return task;
       });
     });
+
+    console.log('update time: ', tasks);
   };
 
   const deleteTask = (id: string) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    console.log('delete time: ', tasks);
   };
 
   return (

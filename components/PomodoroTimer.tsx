@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 
 const PomodoroTimer = () => {
-  const { tasks, addTimeToTask, addTask } = useTaskContext(); // Ensure addTask is included here
+  const { tasks, addTimeToTask, addTask } = useTaskContext();
   const [time, setTime] = useState(1500); // Default 25 minutes in seconds
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
@@ -14,6 +14,10 @@ const PomodoroTimer = () => {
   const toggleTimer = () => {
     if (taskId) {
       setIsActive(!isActive);
+
+      if (isActive) {
+        logTime();  // Log time when the timer is paused
+      }
     }
   };
 
@@ -31,7 +35,10 @@ const PomodoroTimer = () => {
         setTaskId(existingTask.id);
       } else {
         const newTask = addTask(trimmedTaskName);
-        setTaskId(newTask.id);
+        if (newTask) {
+          setTaskId(newTask.id);
+          console.log("New task created:", newTask);
+        }
       }
     } else {
       setTaskId(null); // Reset taskId if the input is empty or invalid
@@ -47,11 +54,16 @@ const PomodoroTimer = () => {
       setTime(1500); // Set focus time to 25 minutes
     }
     setIsActive(false);
+    logTime();  // Log time when switching to break
   };
 
   const logTime = () => {
     if (taskId && !isBreak) {
-      addTimeToTask(taskId, 1500 - time, 'Pomodoro'); // Log the time spent during focus session
+      const timeSpent = 1500 - time;
+      if (timeSpent > 0) {
+        addTimeToTask(taskId, timeSpent, 'Pomodoro'); // Log the time spent during focus session
+        console.log("Time logged:", { taskId, timeSpent });
+      }
     }
   };
 

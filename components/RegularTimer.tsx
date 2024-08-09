@@ -35,7 +35,10 @@ const RegularTimer = () => {
         setTaskId(existingTask.id);
       } else {
         const newTask = addTask(trimmedTaskName);
-        setTaskId(newTask.id);
+        if (newTask) {
+          setTaskId(newTask.id);
+          console.log("New task created:", newTask);
+        }
       }
     } else {
       setTaskId(null); // Reset taskId if the input is empty or invalid
@@ -45,6 +48,7 @@ const RegularTimer = () => {
   const logTime = () => {
     if (taskId && time > 0) {
       addTimeToTask(taskId, time, 'Regular');
+      console.log("Time logged:", { taskId, timeSpent: time });
       resetTimer();
     }
   };
@@ -78,10 +82,7 @@ const RegularTimer = () => {
         <div className='countdown'>{formatTime(time)}</div>
         <div className='buttons'>
           <button onClick={toggleTimer} disabled={!taskId}>
-            {isActive ? 'Pause' : 'Start'}
-          </button>
-          <button onClick={resetTimer} disabled={!taskId || !isActive}>
-            Reset
+            {isActive ? 'Stop' : 'Start'}
           </button>
         </div>
       </div>

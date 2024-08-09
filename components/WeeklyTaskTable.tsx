@@ -146,7 +146,7 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
                 );
               })}
               <td>
-                <button onClick={() => deleteTask(task.id)}><Trash/></button>
+                <button onClick={() => deleteTask(task.id)}><Trash /></button>
               </td>
             </tr>
           ))}

@@ -47,11 +47,11 @@
 }
 
 .timer-wrapper {
-  @include bp(md){
-    grid-column: 1 / span 2;
-  }
+  // @include bp(md){
+    // grid-column: 1 / span 2;
+  // }
 
-  @include bp(xl){
+  @include bp(md){
     grid-column: 2;
     grid-row: 1 / span 2;
   }
