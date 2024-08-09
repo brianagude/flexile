@@ -27,7 +27,7 @@ export default function ReadMe() {
       </ul>
 
       <h2>Future Development</h2>
-      <p>An automatic invoicing feature could be built on this foundation, further reducing administrative overhead by generating invoices directly from tracked time that hasn't been invoiced yet.</p>
+      <p>An automatic invoicing feature could be built on this foundation, further reducing administrative overhead by generating invoices directly from tracked time that hasn&apos;t been invoiced yet.</p>
       <p>In summary, this time tracking feature not only improves operational efficiency for Flexile users but also strengthens Flexile&apos;s core KPIs by ensuring accurate billing and optimal resource management.</p>
 
       <h3>Links</h3>
