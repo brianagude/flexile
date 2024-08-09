@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import Menu from '../components/Menu';
-import { Inter } from "next/font/google";
-import "@/styles/main.scss";
+import { DM_Sans } from "next/font/google";
+import localFont from 'next/font/local'
+import "@/styles/reset.scss";
 
-const inter = Inter({ subsets: ["latin"] });
+const dmSans = DM_Sans(
+  { subsets: ["latin"], weight: ['300', '400', '500'] }
+);
+
 
 export const metadata: Metadata = {
   title: "Flexile | Briana Gude",
@@ -17,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={dmSans.className}>
         <Menu/>
         <main>
           {children}

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { addDays, format } from 'date-fns';
 import ArrowRight from '@/components/icon-arrow-right';
 import ArrowLeft from '@/components/icon-arrow-left';
+import Trash from '@/components/icon-trash';
 
 interface WeeklyTaskTableProps {
   currentWeek: Date;
@@ -145,7 +146,7 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
                 );
               })}
               <td>
-                <button onClick={() => deleteTask(task.id)}>X</button>
+                <button onClick={() => deleteTask(task.id)}><Trash/></button>
               </td>
             </tr>
           ))}

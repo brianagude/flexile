@@ -1,24 +1,41 @@
 "use client"
-// components/PomodoroTimer.tsx
 
 import { useState, useEffect } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 
 const PomodoroTimer = () => {
-  const { tasks, addTimeToTask } = useTaskContext();
+  const { tasks, addTimeToTask, addTask } = useTaskContext(); // Ensure addTask is included here
   const [time, setTime] = useState(1500); // Default 25 minutes in seconds
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
-  const [taskName, setTaskName] = useState('');
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const [taskInput, setTaskInput] = useState('');
 
   const toggleTimer = () => {
-    if (taskName) {
+    if (taskId) {
       setIsActive(!isActive);
     }
   };
 
-  const handleTaskChange = (e) => {
-    setTaskName(e.target.value);
+  const handleTaskInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTaskInput(e.target.value);
+  };
+
+  const handleTaskInputBlur = () => {
+    const trimmedTaskName = taskInput.trim();
+
+    if (trimmedTaskName) {
+      const existingTask = tasks.find((task) => task.name === trimmedTaskName);
+
+      if (existingTask) {
+        setTaskId(existingTask.id);
+      } else {
+        const newTask = addTask(trimmedTaskName);
+        setTaskId(newTask.id);
+      }
+    } else {
+      setTaskId(null); // Reset taskId if the input is empty or invalid
+    }
   };
 
   const startBreak = () => {
@@ -33,13 +50,13 @@ const PomodoroTimer = () => {
   };
 
   const logTime = () => {
-    if (taskName && !isBreak) {
-      addTimeToTask(taskName, 1500 - time); // Log the time spent during focus session
+    if (taskId && !isBreak) {
+      addTimeToTask(taskId, 1500 - time, 'Pomodoro'); // Log the time spent during focus session
     }
   };
 
   useEffect(() => {
-    let interval;
+    let interval: NodeJS.Timeout | undefined;
     if (isActive) {
       interval = setInterval(() => {
         setTime((prevTime) => prevTime - 1);
@@ -58,10 +75,12 @@ const PomodoroTimer = () => {
         setTime(300);
       }
       setIsActive(false);
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     }
 
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isActive, time]);
 
   return (
@@ -72,10 +91,10 @@ const PomodoroTimer = () => {
           <span>{isBreak ? 'Break' : 'Focus'}</span>
         </div>
         <div className='buttons'>
-          <button onClick={toggleTimer} disabled={!taskName}>
+          <button onClick={toggleTimer} disabled={!taskId}>
             {isActive ? 'Pause' : 'Start'}
           </button>
-          <button onClick={startBreak} disabled={!taskName}>
+          <button onClick={startBreak} disabled={!taskId}>
             {isBreak ? 'Focus' : 'Break'}
           </button>
         </div>
@@ -84,8 +103,9 @@ const PomodoroTimer = () => {
         type="text"
         placeholder="What are you working on?"
         list="tasks"
-        value={taskName}
-        onChange={handleTaskChange}
+        value={taskInput}
+        onChange={handleTaskInputChange}
+        onBlur={handleTaskInputBlur}
       />
       <datalist id="tasks">
         {tasks.map((task) => (

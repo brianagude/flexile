@@ -1,50 +1,16 @@
-@import '../reset.scss';
-@import '../colors.scss';
-@import '../mixins.scss';
+@import './colors.scss';
+@import './mixins.scss';
+@import './base.scss';
 
-.page-header {
-  background: $gray-light;
-  width: 100%;
-  padding: 16px;
-  border-bottom: 1px solid $gray;
-
-  @include bp(md) {
-    padding: 24px;
-  }
-
-  @include bp(lg) {
-    padding: 24px 64px;
-  }
-
-  .container {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  h1 {
-    font-size: 24px;
-    font-weight: 700;
-    text-transform: capitalize;
-  }
-}
 
 .page-wrapper {
-  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 
   @include bp(md) {
-    padding: 24px;
-    gap: 24px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-  }
-
-  @include bp(xl) {
-    padding: 24px 64px;
   }
 }
 
@@ -65,7 +31,7 @@
   }
 
   h3 {
-    font-weight: 700;
+    font-weight: bold;
     font-size: 24px;
     line-height: 1;
     text-transform: capitalize;
@@ -74,7 +40,7 @@
   p {
     color: $gray;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: bold;
     line-height: 1;
     margin-top: 4px;
   }
@@ -103,7 +69,7 @@
     padding: 12px 32px;
     width: 100%;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: bold;
     text-transform: capitalize;
 
     &:hover:not(.highlight) {
@@ -147,7 +113,7 @@
 }
 
 .countdown {
-  font-weight: 700;
+  font-weight: bold;
   font-size: 24px;
   line-height: 1;
   text-transform: capitalize;
@@ -157,7 +123,7 @@
     display: block;
     color: $gray;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: bold;
     text-transform: capitalize;
     margin-top: 4px;
   }
@@ -183,14 +149,14 @@
 
     &:disabled {
       background: $gray-lightest;
-      border: $gray-med;
-      color: $gray-med;
+      border: 1px solid $gray-med;
+      color: $gray;
       cursor: not-allowed;
 
       &:hover {
         background: $gray-lightest;
-        border: $gray-med;
-        color: $gray-med;
+        border: 1px solid $gray-med;
+        color: $gray;
       }
     }
   }
@@ -246,10 +212,19 @@ td {
     justify-content: center;
 
     &.error { border: 1px solid red; }
+
+    &:disabled {
+      background: $gray-lightest;
+      border: 1px solid $gray-med;
+      color: $gray;
+      cursor: not-allowed;
+
+      &:hover {
+        background: $gray-lightest;
+        border: 1px solid $gray-med;
+        color: $gray;
+      }
+    }
   }
 }
-
-// .highlight-column {
-//   background-color: $gray-light;
-// }
 
