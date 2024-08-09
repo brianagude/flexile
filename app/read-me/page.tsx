@@ -14,7 +14,7 @@ export default function ReadMe() {
       <p>The time tracking feature was implemented to directly benefit Flexile users—both company founders and contractors—by enhancing accountability, improving billing accuracy, and streamlining workflow management.</p>
 
       <ol>
-        <li><b>For Founders:</b> The feature provides precise, real-time data on resource allocation, enabling better project management and more accurate cash flow predictions. This aligns with Flexile’s KPI of making dollar-backed decisions by ensuring that every hour worked is accounted for and invoiced correctly.</li>
+        <li><b>For Founders:</b> The feature provides precise, real-time data on resource allocation, enabling better project management and more accurate cash flow predictions. This aligns with Flexile&apos;s KPI of making dollar-backed decisions by ensuring that every hour worked is accounted for and invoiced correctly.</li>
         <li><b>For Contractors:</b> Time tracking ensures contractors are paid accurately for every minute worked, fostering trust and transparency with clients. It saves time by eliminating the need for external tools.</li>
       </ol> 
 
@@ -28,7 +28,7 @@ export default function ReadMe() {
 
       <h2>Future Development</h2>
       <p>An automatic invoicing feature could be built on this foundation, further reducing administrative overhead by generating invoices directly from tracked time that hasn't been invoiced yet.</p>
-      <p>In summary, this time tracking feature not only improves operational efficiency for Flexile users but also strengthens Flexile’s core KPIs by ensuring accurate billing and optimal resource management.</p>
+      <p>In summary, this time tracking feature not only improves operational efficiency for Flexile users but also strengthens Flexile&apos;s core KPIs by ensuring accurate billing and optimal resource management.</p>
 
       <h3>Links</h3>
       <ol>
