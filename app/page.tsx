@@ -5,7 +5,7 @@ import "@/styles/pages/tracking.scss";
 export default function Home() {
   return (
     <TaskProvider>
-        <DashboardManager />
+      <DashboardManager />
     </TaskProvider>
   );
 }

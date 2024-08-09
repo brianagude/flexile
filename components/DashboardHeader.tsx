@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-const DashboardHeader = ({ currentMonth }) => {
+interface DashboardHeaderProps {
+  currentMonth: string;
+}
+
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ currentMonth }) => {
   return (
     <header className='page-header'>
       <div className='container'>

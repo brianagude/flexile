@@ -9,9 +9,9 @@ import Timer from './Timer';
 import WeeklyTaskTable from './WeeklyTaskTable';
 
 const DashboardManager = () => {
-  const [currentWeek, setCurrentWeek] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
-  const [currentMonth, setCurrentMonth] = useState('');
-  const [totalMonthTime, setTotalMonthTime] = useState(0); // in seconds
+  const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [currentMonth, setCurrentMonth] = useState<string>('');
+  const [totalMonthTime, setTotalMonthTime] = useState<number>(0); // in seconds
   const hourlyRate = 100;
   const { tasks } = useTaskContext();
 
@@ -38,7 +38,7 @@ const DashboardManager = () => {
     setTotalMonthTime(totalTime);
   }, [currentWeek, tasks]);
 
-  const formatTime = (timeInSeconds) => {
+  const formatTime = (timeInSeconds: number): string => {
     const hours = Math.floor(timeInSeconds / 3600);
     const minutes = Math.floor((timeInSeconds % 3600) / 60);
     return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m`;
@@ -48,9 +48,9 @@ const DashboardManager = () => {
     <>
       <DashboardHeader currentMonth={currentMonth} />
       <div className='page-wrapper'>
-      <Stats totalMonthTime={totalMonthTime} hourlyRate={hourlyRate} />
-      <Timer />
-      <WeeklyTaskTable currentWeek={currentWeek} setCurrentWeek={setCurrentWeek} />
+        <Stats totalMonthTime={totalMonthTime} hourlyRate={hourlyRate} />
+        <Timer />
+        <WeeklyTaskTable currentWeek={currentWeek} setCurrentWeek={setCurrentWeek} />
       </div>
     </>
   );
