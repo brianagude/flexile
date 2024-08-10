@@ -18,6 +18,9 @@ export default function ReadMe() {
         <li><b>For Contractors:</b> Time tracking ensures contractors are paid accurately for every minute worked, fostering trust and transparency with clients. It saves time by eliminating the need for external tools.</li>
       </ol> 
 
+      <h2>Using the Time Tracking Feature</h2>
+      <p>To start tracking time on a task, simply select or create a task from the dropdown menu, and press the “Start” button. The timer will begin counting down, and you can monitor your progress. If you&apos;re using the Pomodoro timer, the “Focus” mode will help you concentrate on your work, and you can switch to “Break” mode when needed. Once your session is complete, the tracked time is automatically logged against the selected task for that day. You can view your tracked time in the weekly table, making it easy to manage your workload and ensure accurate time tracking for invoicing.</p>
+
       <h2>Technical Integration</h2>
 
       <ul>
