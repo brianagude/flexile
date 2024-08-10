@@ -46,13 +46,15 @@ const PomodoroTimer = () => {
   }, [taskId, isBreak, time, addTimeToTask]);
 
   const toggleTimer = () => {
-    if (!isActive) {
-      setIsActive(true);
-    } else {
+    setIsActive((prevIsActive) => !prevIsActive);
+
+    if (isActive) {
+      // When pausing the timer or switching to break, log the time if in focus mode
       if (!isBreak) {
         logTime();
       }
-      setIsActive(false);
+
+      // If the timer is active and we pause it, switch modes
       if (!isBreak) {
         setIsBreak(true);
         setTime(300); // Set break time to 5 minutes
@@ -65,7 +67,7 @@ const PomodoroTimer = () => {
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
-    if (isActive && !isBreak) {
+    if (isActive) {
       interval = setInterval(() => {
         setTime((prevTime) => prevTime - 1);
       }, 1000);
