@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 
@@ -27,22 +27,23 @@ const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false); // Add hydration state
 
   useEffect(() => {
-    // Check if window object is available
     if (typeof window !== 'undefined') {
       const storedTasks = localStorage.getItem('tasks');
       if (storedTasks) {
         setTasks(JSON.parse(storedTasks));
       }
+      setIsHydrated(true); // Mark as hydrated after localStorage is read
     }
   }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (isHydrated) {
       localStorage.setItem('tasks', JSON.stringify(tasks));
     }
-  }, [tasks]);
+  }, [tasks, isHydrated]);
 
   const addTask = (name: string): Task | null => {
     const trimmedName = name.trim();

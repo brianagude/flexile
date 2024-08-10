@@ -138,17 +138,7 @@ main {
   }
 }
 
-.page-wrapper {
-  padding: 16px;
 
-  @include bp(md) {
-    padding: 24px;
-  }
-
-  @include bp(xl) {
-    padding: 24px 64px;
-  }
-}
 
 a { 
   color: $black; 

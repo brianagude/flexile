@@ -27,10 +27,10 @@ export default function ReadMe() {
       </ul>
 
       <h2>Future Development</h2>
-      <p>An automatic invoicing feature could be built on this foundation, further reducing administrative overhead by generating invoices directly from tracked time that hasn&apos;t been invoiced yet.</p>
-      <p>In summary, this time tracking feature not only improves operational efficiency for Flexile users but also strengthens Flexile&apos;s core KPIs by ensuring accurate billing and optimal resource management.</p>
+      <p>The data collected from this feature opens up opportunities for further enhancements, such as integrating with reporting tools to analyze productivity patterns, offering insights into project timelines, and identifying areas where efficiency can be improved.</p><p>Additionally, this foundation can be expanded to include an automatic invoicing system, which would seamlessly generate invoices from tracked, uninvoiced time, further streamlining the billing process and enhancing operational efficiency.</p>
+      <p>By leveraging the information gathered through this feature, Flexile can not only enhance user experience but also drive meaningful improvements to its bottom line and key performance indicators.</p>
 
-      <h3>Links</h3>
+      <h2>Links</h2>
       <ol>
         <li><a href='https://www.figma.com/design/OPepIDhRULv3VKIe2v6zh7/GUMROAD?node-id=0-1&t=b348DS7dBp2FSxjz-1'target="_blank">Figma Link</a></li>
         <li><a href='https://github.com/brianagude/flexile' target="_blank">Github Repo</a></li>

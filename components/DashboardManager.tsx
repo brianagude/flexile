@@ -47,7 +47,7 @@ const DashboardManager = () => {
   return (
     <>
       <DashboardHeader currentMonth={currentMonth} />
-      <div className='page-wrapper'>
+      <div className='tracking-wrapper'>
         <Stats totalMonthTime={totalMonthTime} hourlyRate={hourlyRate} />
         <Timer />
         <WeeklyTaskTable currentWeek={currentWeek} setCurrentWeek={setCurrentWeek} />

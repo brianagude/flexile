@@ -78,13 +78,11 @@ const RegularTimer = () => {
 
   return (
     <div className='timer regular-timer'>
-      <div className='countdown-buttons'>
+      <div className='countdown-button'>
         <div className='countdown'>{formatTime(time)}</div>
-        <div className='buttons'>
-          <button onClick={toggleTimer} disabled={!taskId}>
+          <button onClick={toggleTimer} disabled={!taskId} className='timer-btn'>
             {isActive ? 'Stop' : 'Start'}
           </button>
-        </div>
       </div>
 
       <input

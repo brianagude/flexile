@@ -16,7 +16,7 @@ const Menu = () => {
             height = {36}
           />
 
-          <button className='menu-trigger'>
+          <button className='menu-trigger' disabled>
             <Image
               src='/images/menu.svg'
               alt=' menu icon'

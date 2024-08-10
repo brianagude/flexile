@@ -4,6 +4,15 @@
 
 .page-wrapper {
   max-width: 640px;
+  padding: 16px;
+
+  @include bp(md) {
+    padding: 24px;
+  }
+
+  @include bp(xl) {
+    padding: 24px 64px;
+  }
 
   a {
     color: $black;
@@ -23,13 +32,6 @@ h2 {
   font-weight: bold;
   line-height: 1.2;
   margin-top: 24px;
-}
-
-h3 {
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1.2;
-  margin-top: 20px;
 }
 
 ul, ol { margin-top: 16px; }
@@ -55,6 +57,7 @@ b { font-weight: bold; }
 p {
   margin-top: 12px;
   font-size: 16px;
+  line-height: 1.33;
 
   & + p { margin-top: 8px; }
 }

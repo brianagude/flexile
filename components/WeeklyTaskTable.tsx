@@ -133,6 +133,7 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
 
                 return (
                   <td key={day.toISOString()}>
+                    <span>{format(day, 'MMM d')}</span> {/* Display abbreviated month and day */}
                     <input
                       type="text"
                       placeholder="HH:MM"
@@ -162,6 +163,7 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
             </td>
             {weekDays.map((day) => (
               <td key={day.toISOString()}>
+                <span>{format(day, 'MMM d')}</span> {/* Display abbreviated month and day */}
                 <input
                   type="text"
                   placeholder="HH:MM"
@@ -191,6 +193,7 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
               }, 0);
               return (
                 <td key={day.toISOString()}>
+                  <span>{format(day, 'MMM d')}</span> {/* Display abbreviated month and day */}
                   {totalTime > 0 ? formatTime(totalTime) : '—'}
                 </td>
               );
