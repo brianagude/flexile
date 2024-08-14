@@ -3,12 +3,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { useTaskManager } from '../hooks/useTaskManager';
-import { Task } from '../types'; // Adjust the path based on where you place the types.ts file
+import { Task } from '@/types';
 
 const PomodoroTimer = () => {
   const { addTimeToTask } = useTaskContext();
   const { taskId, taskInput, handleTaskInputChange, handleTaskInputBlur, tasks } = useTaskManager();
-  const [time, setTime] = useState(1500); // Default 25 minutes in seconds
+  const [time, setTime] = useState(1500);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
 
@@ -16,7 +16,7 @@ const PomodoroTimer = () => {
     if (taskId && !isBreak) {
       const timeSpent = 1500 - time;
       if (timeSpent > 0) {
-        addTimeToTask(taskId, timeSpent, 'Pomodoro'); // Log the time spent during focus session
+        addTimeToTask(taskId, timeSpent, 'Pomodoro');
       }
     }
   }, [taskId, isBreak, time, addTimeToTask]);

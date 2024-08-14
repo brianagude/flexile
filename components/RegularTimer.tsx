@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { useTaskContext } from '../context/TaskContext';
-import { useTaskManager } from '../hooks/useTaskManager';
+import { useTaskContext } from '@/context/TaskContext';
+import { useTaskManager } from '@/hooks/useTaskManager';
 import { Task } from '@/types';
 
 const RegularTimer = () => {

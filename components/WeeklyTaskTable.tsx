@@ -6,7 +6,7 @@ import { addDays, format } from 'date-fns';
 import ArrowRight from '@/components/icon-arrow-right';
 import ArrowLeft from '@/components/icon-arrow-left';
 import Trash from '@/components/icon-trash';
-import { Task, WeeklyTaskTableProps, InputErrors, NewTaskLogs } from '../types';
+import { Task, WeeklyTaskTableProps, InputErrors, NewTaskLogs } from '@/types';
 
 const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) => {
   const { tasks, updateTask, addTask, deleteTask } = useTaskContext();

@@ -11,7 +11,7 @@ import WeeklyTaskTable from './WeeklyTaskTable';
 const DashboardManager = () => {
   const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [currentMonth, setCurrentMonth] = useState<string>('');
-  const [totalMonthTime, setTotalMonthTime] = useState<number>(0); // in seconds
+  const [totalMonthTime, setTotalMonthTime] = useState<number>(0);
   const hourlyRate = 100;
   const { tasks } = useTaskContext();
 
@@ -21,7 +21,6 @@ const DashboardManager = () => {
     const monthName = format(monday, 'MMMM');
     setCurrentMonth(monthName);
 
-    // Calculate total time for the month
     const month = getMonth(monday);
     const year = getYear(monday);
 

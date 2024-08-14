@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useState, useContext, ReactNode } from 'react';
-import { Task, TaskContextType } from '../types'; // Adjust the import path as needed
+import { Task, TaskContextType } from '@/types';
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 

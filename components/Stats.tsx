@@ -7,12 +7,12 @@ const Stats: React.FC<StatsProps> = ({ totalMonthTime, hourlyRate }) => {
   const formatTime = (timeInSeconds: number): string => {
     const hours = Math.floor(timeInSeconds / 3600);
     const minutes = Math.floor((timeInSeconds % 3600) / 60);
-    return `${hours}h ${minutes}m`; // Display hours and minutes without padding
+    return `${hours}h ${minutes}m`;
   };
 
   const calculateAmountToBill = (timeInSeconds: number, rate: number): string => {
     const amount = (timeInSeconds / 3600) * rate;
-    return `$${amount.toFixed(2)}`; // Display amount with 2 decimal points
+    return `$${amount.toFixed(2)}`;
   };
 
   return (
