@@ -1,14 +1,15 @@
-"use client"
+"use client";
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTaskContext } from '../context/TaskContext';
+import { useTaskManager } from '../hooks/useTaskManager';
+import { Task } from '@/types';
 
 const RegularTimer = () => {
-  const { tasks, addTimeToTask, addTask } = useTaskContext();
+  const { addTimeToTask } = useTaskContext();
+  const { taskId, taskInput, handleTaskInputChange, handleTaskInputBlur, tasks } = useTaskManager();
   const [time, setTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
-  const [taskId, setTaskId] = useState<string | null>(null);
-  const [taskInput, setTaskInput] = useState('');
 
   const toggleTimer = () => {
     if (taskId) {
@@ -21,34 +22,9 @@ const RegularTimer = () => {
     setIsActive(false);
   };
 
-  const handleTaskInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTaskInput(e.target.value);
-  };
-
-  const handleTaskInputBlur = () => {
-    const trimmedTaskName = taskInput.trim();
-
-    if (trimmedTaskName) {
-      const existingTask = tasks.find((task) => task.name === trimmedTaskName);
-
-      if (existingTask) {
-        setTaskId(existingTask.id);
-      } else {
-        const newTask = addTask(trimmedTaskName);
-        if (newTask) {
-          setTaskId(newTask.id);
-          console.log("New task created:", newTask);
-        }
-      }
-    } else {
-      setTaskId(null); // Reset taskId if the input is empty or invalid
-    }
-  };
-
   const logTime = useCallback(() => {
     if (taskId && time > 0) {
       addTimeToTask(taskId, time, 'Regular');
-      console.log("Time logged:", { taskId, timeSpent: time });
       resetTimer();
     }
   }, [taskId, time, addTimeToTask]);
@@ -57,8 +33,8 @@ const RegularTimer = () => {
     let interval: NodeJS.Timeout | undefined;
     if (isActive) {
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1); // Increase time by 1 second
-      }, 1000); // Update every second
+        setTime((prevTime) => prevTime + 1);
+      }, 1000);
     } else if (!isActive && time > 0) {
       logTime();
     }
@@ -94,7 +70,7 @@ const RegularTimer = () => {
         onBlur={handleTaskInputBlur}
       />
       <datalist id="tasks">
-        {tasks.map(task => (
+        {tasks.map((task: Task) => (
           <option key={task.id} value={task.name} />
         ))}
       </datalist>

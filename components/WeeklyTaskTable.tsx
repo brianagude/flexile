@@ -6,17 +6,13 @@ import { addDays, format } from 'date-fns';
 import ArrowRight from '@/components/icon-arrow-right';
 import ArrowLeft from '@/components/icon-arrow-left';
 import Trash from '@/components/icon-trash';
+import { Task, WeeklyTaskTableProps, InputErrors, NewTaskLogs } from '../types';
 
-interface WeeklyTaskTableProps {
-  currentWeek: Date;
-  setCurrentWeek: (date: Date) => void;
-}
-
-const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurrentWeek }) => {
+const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) => {
   const { tasks, updateTask, addTask, deleteTask } = useTaskContext();
   const [newTaskName, setNewTaskName] = useState<string>('');
-  const [newTaskLogs, setNewTaskLogs] = useState<{ [key: string]: string }>({});
-  const [inputErrors, setInputErrors] = useState<{ [key: string]: boolean }>({});
+  const [newTaskLogs, setNewTaskLogs] = useState<NewTaskLogs>({});
+  const [inputErrors, setInputErrors] = useState<InputErrors>({});
 
   const getWeekDays = (startDate: Date): Date[] => {
     return Array.from({ length: 7 }).map((_, index) => addDays(startDate, index));
@@ -30,7 +26,7 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
 
   const handleTaskNameChange = (id: string, newName: string) => {
     const currentDate = new Date().toISOString().split('T')[0];
-    updateTask(id, newName, currentDate, 0); // Update task name
+    updateTask(id, newName, currentDate, 0);
   };
 
   const handleTimeBlur = (id: string, date: string, newTime: string, currentName: string) => {
@@ -39,15 +35,16 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
 
     if (timeParts.length === 2 && timeParts.every((part) => /^\d+$/.test(part))) {
       const [hours, minutes] = timeParts;
-      if (!isNaN(parseInt(hours)) && !isNaN(parseInt(minutes))) {
-        const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+      const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+
+      if (!isNaN(timeInSeconds)) {
         updateTask(id, currentName, date, timeInSeconds);
-        setInputErrors((prev) => ({ ...prev, [inputKey]: false })); // Remove error class if valid
+        setInputErrors((prev) => ({ ...prev, [inputKey]: false }));
       } else {
-        setInputErrors((prev) => ({ ...prev, [inputKey]: true })); // Add error class if invalid
+        setInputErrors((prev) => ({ ...prev, [inputKey]: true }));
       }
     } else {
-      setInputErrors((prev) => ({ ...prev, [inputKey]: true })); // Add error class if invalid
+      setInputErrors((prev) => ({ ...prev, [inputKey]: true }));
     }
   };
 
@@ -62,23 +59,23 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
   const addNewTask = () => {
     if (newTaskName.trim() !== '') {
       const taskId = Date.now().toString();
-      addTask(newTaskName);
+      const newTask = addTask(newTaskName);
 
-      // Save each time entry to the task
-      Object.keys(newTaskLogs).forEach((date) => {
-        const timeParts = newTaskLogs[date].split(':');
-        if (timeParts.length === 2 && timeParts.every((part) => /^\d+$/.test(part))) {
-          const [hours, minutes] = timeParts;
-          if (!isNaN(parseInt(hours)) && !isNaN(parseInt(minutes))) {
+      if (newTask) {
+        Object.keys(newTaskLogs).forEach((date) => {
+          const timeParts = newTaskLogs[date].split(':');
+          if (timeParts.length === 2 && timeParts.every((part) => /^\d+$/.test(part))) {
+            const [hours, minutes] = timeParts;
             const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
-            updateTask(taskId, newTaskName, date, timeInSeconds);
+            if (!isNaN(timeInSeconds)) {
+              updateTask(taskId, newTaskName, date, timeInSeconds);
+            }
           }
-        }
-      });
+        });
 
-      // Reset the input fields for the new task row
-      setNewTaskName('');
-      setNewTaskLogs({});
+        setNewTaskName('');
+        setNewTaskLogs({});
+      }
     }
   };
 
@@ -89,7 +86,7 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
   };
 
   return (
-    <div className='task-table'>
+    <div className="task-table">
       <table>
         <thead>
           <tr>
@@ -111,7 +108,7 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
           </tr>
         </thead>
         <tbody>
-          {tasks.map((task) => (
+          {tasks.map((task: Task) => (
             <tr key={task.id}>
               <td>
                 <input
@@ -122,18 +119,16 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
               </td>
               {weekDays.map((day) => {
                 const date = format(day, 'yyyy-MM-dd');
-                const log = task.workInstances
-                  ? task.workInstances.find((instance) =>
-                      instance.startTime.startsWith(date)
-                    )
-                  : undefined;
+                const log = task.workInstances.find((instance) =>
+                  instance.startTime.startsWith(date)
+                );
                 const timeValue = log ? formatTime(log.duration) : '';
                 const inputKey = `${task.id}-${date}`;
                 const inputClass = inputErrors[inputKey] ? 'error' : '';
 
                 return (
                   <td key={day.toISOString()}>
-                    <span>{format(day, 'MMM d')}</span> {/* Display abbreviated month and day */}
+                    <span>{format(day, 'MMM d')}</span>
                     <input
                       type="text"
                       placeholder="HH:MM"
@@ -147,7 +142,9 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
                 );
               })}
               <td>
-                <button onClick={() => deleteTask(task.id)}><Trash /></button>
+                <button onClick={() => deleteTask(task.id)}>
+                  <Trash />
+                </button>
               </td>
             </tr>
           ))}
@@ -158,16 +155,16 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
                 placeholder="New Task"
                 value={newTaskName}
                 onChange={handleNewTaskChange}
-                onBlur={addNewTask} // Automatically save when the input loses focus
+                onBlur={addNewTask}
               />
             </td>
             {weekDays.map((day) => (
               <td key={day.toISOString()}>
-                <span>{format(day, 'MMM d')}</span> {/* Display abbreviated month and day */}
+                <span>{format(day, 'MMM d')}</span>
                 <input
                   type="text"
                   placeholder="HH:MM"
-                  disabled={!newTaskName} // Disable input if task name is not defined
+                  disabled={!newTaskName}
                   value={newTaskLogs[format(day, 'yyyy-MM-dd')] || ''}
                   onChange={(e) =>
                     handleNewTaskTimeChange(format(day, 'yyyy-MM-dd'), e.target.value)
@@ -185,15 +182,13 @@ const WeeklyTaskTable: React.FC<WeeklyTaskTableProps> = ({ currentWeek, setCurre
               const totalTime = tasks.reduce((acc, task) => {
                 const date = format(day, 'yyyy-MM-dd');
                 const dailyTotal = task.workInstances
-                  ? task.workInstances
-                      .filter((instance) => instance.startTime.startsWith(date))
-                      .reduce((sum, instance) => sum + instance.duration, 0)
-                  : 0;
+                  .filter((instance) => instance.startTime.startsWith(date))
+                  .reduce((sum, instance) => sum + instance.duration, 0);
                 return acc + dailyTotal;
               }, 0);
               return (
                 <td key={day.toISOString()}>
-                  <span>{format(day, 'MMM d')}</span> {/* Display abbreviated month and day */}
+                  <span>{format(day, 'MMM d')}</span>
                   {totalTime > 0 ? formatTime(totalTime) : '—'}
                 </td>
               );

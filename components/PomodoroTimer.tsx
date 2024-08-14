@@ -2,45 +2,21 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTaskContext } from '../context/TaskContext';
+import { useTaskManager } from '../hooks/useTaskManager';
+import { Task } from '../types'; // Adjust the path based on where you place the types.ts file
 
 const PomodoroTimer = () => {
-  const { tasks, addTimeToTask, addTask } = useTaskContext();
+  const { addTimeToTask } = useTaskContext();
+  const { taskId, taskInput, handleTaskInputChange, handleTaskInputBlur, tasks } = useTaskManager();
   const [time, setTime] = useState(1500); // Default 25 minutes in seconds
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
-  const [taskId, setTaskId] = useState<string | null>(null);
-  const [taskInput, setTaskInput] = useState('');
-
-  const handleTaskInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTaskInput(e.target.value);
-  };
-
-  const handleTaskInputBlur = () => {
-    const trimmedTaskName = taskInput.trim();
-
-    if (trimmedTaskName) {
-      const existingTask = tasks.find((task) => task.name === trimmedTaskName);
-
-      if (existingTask) {
-        setTaskId(existingTask.id);
-      } else {
-        const newTask = addTask(trimmedTaskName);
-        if (newTask) {
-          setTaskId(newTask.id);
-          console.log("New task created:", newTask);
-        }
-      }
-    } else {
-      setTaskId(null); // Reset taskId if the input is empty or invalid
-    }
-  };
 
   const logTime = useCallback(() => {
     if (taskId && !isBreak) {
       const timeSpent = 1500 - time;
       if (timeSpent > 0) {
         addTimeToTask(taskId, timeSpent, 'Pomodoro'); // Log the time spent during focus session
-        console.log("Time logged:", { taskId, timeSpent });
       }
     }
   }, [taskId, isBreak, time, addTimeToTask]);
@@ -49,12 +25,10 @@ const PomodoroTimer = () => {
     setIsActive((prevIsActive) => !prevIsActive);
 
     if (isActive) {
-      // When pausing the timer or switching to break, log the time if in focus mode
       if (!isBreak) {
         logTime();
       }
 
-      // If the timer is active and we pause it, switch modes
       if (!isBreak) {
         setIsBreak(true);
         setTime(300); // Set break time to 5 minutes
@@ -100,9 +74,9 @@ const PomodoroTimer = () => {
           {new Date(time * 1000).toISOString().substr(14, 5)}
           <span>{isBreak ? 'Break' : 'Focus'}</span>
         </div>
-          <button onClick={toggleTimer} disabled={!taskId} className='timer-btn'>
-            {isActive ? (isBreak ? 'End Break' : 'End Focus') : (isBreak ? 'Start Break' : 'Start Focus')}
-          </button>
+        <button onClick={toggleTimer} disabled={!taskId} className='timer-btn'>
+          {isActive ? (isBreak ? 'End Break' : 'End Focus') : (isBreak ? 'Start Break' : 'Start Focus')}
+        </button>
       </div>
       <input
         type="text"
@@ -113,7 +87,7 @@ const PomodoroTimer = () => {
         onBlur={handleTaskInputBlur}
       />
       <datalist id="tasks">
-        {tasks.map((task) => (
+        {tasks.map((task: Task) => (
           <option key={task.id} value={task.name} />
         ))}
       </datalist>
