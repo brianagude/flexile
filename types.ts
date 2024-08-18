@@ -13,23 +13,11 @@ export interface Task {
 
 export interface TaskContextType {
   tasks: Task[];
-  addTimeToTask: (id: string, time: number, timerType: 'Pomodoro' | 'Regular') => void;
   addTask: (name: string) => Task | null;
+  addTimeToTask: (taskId: string, time: number, timerType: 'Pomodoro' | 'Regular') => void;
   updateTask: (id: string, name: string, date: string, time: number) => void;
   deleteTask: (id: string) => void;
-}
-
-export interface WorkInstance {
-  startTime: string;
-  duration: number;
-  timerType: 'Pomodoro' | 'Regular';
-}
-
-export interface Task {
-  id: string;
-  name: string;
-  totalTime: number;
-  workInstances: WorkInstance[];
+  updateTaskTime: (taskId: string, date: string, time: number) => void;
 }
 
 export interface WeeklyTaskTableProps {
@@ -43,4 +31,13 @@ export interface InputErrors {
 
 export interface NewTaskLogs {
   [key: string]: string;
+}
+
+export interface StatsProps {
+  totalMonthTime: number;
+  hourlyRate: number;
+}
+
+export interface DashboardHeaderProps {
+  currentMonth: string;
 }

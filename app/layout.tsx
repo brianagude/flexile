@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import Menu from '../components/Menu';
 import { DM_Sans } from "next/font/google";
-import localFont from 'next/font/local'
-import "@/styles/reset.scss";
+import './globals.css';
 
 const dmSans = DM_Sans(
   { subsets: ["latin"], weight: ['300', '400', '500'] }
 );
-
 
 export const metadata: Metadata = {
   title: "Flexile | Briana Gude",
@@ -21,9 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={dmSans.className}>
+      <body className={`${dmSans.className} flex flex-col lg:flex-row h-screen`}>
         <Menu/>
-        <main>
+        <main className="flex-1 overflow-x-auto">
           {children}
         </main>
       </body>

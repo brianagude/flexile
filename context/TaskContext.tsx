@@ -8,7 +8,7 @@ const TaskContext = createContext<TaskContextType | undefined>(undefined);
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const addTask = (name: string): Task | null => {
+  const addTask = (name: string) => {
     const trimmedName = name.trim();
     if (trimmedName === '') return null;
 
@@ -27,12 +27,12 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) => {
         if (task.id === taskId) {
-          const workInstance = task.workInstances.find((instance) =>
+          const existingWorkInstance = task.workInstances.find((instance) =>
             instance.startTime.startsWith(currentDate)
           );
 
-          if (workInstance) {
-            workInstance.duration += time;
+          if (existingWorkInstance) {
+            existingWorkInstance.duration += time;
           } else {
             task.workInstances.push({
               startTime: `${currentDate}T00:00:00`,
@@ -42,6 +42,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
           }
 
           task.totalTime = task.workInstances.reduce((acc, instance) => acc + instance.duration, 0);
+
+          console.log(`Added ${time} seconds to task ${task.name} for ${currentDate}. New total: ${task.totalTime}`);
         }
         return task;
       })
@@ -49,15 +51,47 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateTask = (id: string, name: string, date: string, time: number) => {
+  setTasks((prevTasks) =>
+    prevTasks.map((task) => {
+      if (task.id === id) {
+        const updatedName = name.trim() !== '' ? name : task.name;
+        const workInstance = task.workInstances.find((instance) =>
+          instance.startTime.startsWith(date)
+        );
+        if (workInstance) {
+          workInstance.duration = time;
+        } else {
+          task.workInstances.push({
+            startTime: `${date}T00:00:00`,
+            duration: time,
+            timerType: 'Regular',
+          });
+        }
+        return {
+          ...task,
+          name: updatedName,
+          totalTime: task.workInstances.reduce((acc, instance) => acc + instance.duration, 0),
+        };
+      }
+      return task;
+    })
+  );
+};
+
+  const deleteTask = (id: string) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  };
+
+  const updateTaskTime = (taskId: string, date: string, time: number) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) => {
-        if (task.id === id) {
-          task.name = name.trim() !== '' ? name : task.name;
-          const workInstance = task.workInstances.find((instance) =>
+        if (task.id === taskId) {
+          const existingWorkInstance = task.workInstances.find((instance) =>
             instance.startTime.startsWith(date)
           );
-          if (workInstance) {
-            workInstance.duration = time;
+
+          if (existingWorkInstance) {
+            existingWorkInstance.duration = time;
           } else {
             task.workInstances.push({
               startTime: `${date}T00:00:00`,
@@ -65,6 +99,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
               timerType: 'Regular',
             });
           }
+
           task.totalTime = task.workInstances.reduce((acc, instance) => acc + instance.duration, 0);
         }
         return task;
@@ -72,12 +107,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const deleteTask = (id: string) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-  };
-
   return (
-    <TaskContext.Provider value={{ tasks, addTask, addTimeToTask, updateTask, deleteTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, addTimeToTask, updateTask, deleteTask, updateTaskTime }}>
       {children}
     </TaskContext.Provider>
   );

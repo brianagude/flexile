@@ -3,7 +3,7 @@ import { useTaskContext } from '../context/TaskContext';
 import { Task } from '@/types';
 
 export const useTaskManager = () => {
-  const { tasks, addTask } = useTaskContext();
+  const { tasks, addTask, updateTaskTime, addTimeToTask } = useTaskContext();
   const [taskId, setTaskId] = useState<string | null>(null);
   const [taskInput, setTaskInput] = useState('');
 
@@ -24,6 +24,9 @@ export const useTaskManager = () => {
         if (newTask) {
           setTaskId(newTask.id);
           console.log("New task created:", newTask);
+        } else {
+          console.error("Failed to create new task");
+          // Optionally, show an error message to the user
         }
       }
     } else {
@@ -31,5 +34,14 @@ export const useTaskManager = () => {
     }
   };
 
-  return { taskId, taskInput, handleTaskInputChange, handleTaskInputBlur, tasks };
+  const updateTaskInputFromTimer = (id: string, date: string, time: number) => {
+    const task = tasks.find((t) => t.id === id);
+    if (task) {
+      setTaskId(id);
+      setTaskInput(task.name);
+      updateTaskTime(id, date, time);
+    }
+  };
+
+  return { taskId, taskInput, handleTaskInputChange, handleTaskInputBlur, tasks, updateTaskInputFromTimer, addTimeToTask };
 };

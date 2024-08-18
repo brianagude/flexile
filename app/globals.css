@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-black;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply text-white text-sm font-bold capitalize flex px-8 py-3 justify-center items-center gap-4 rounded-full border border-black bg-black hover:border-blue hover:bg-blue;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-black hover:text-blue hover:border-blue;
+  }
+
+  .btn-icon {
+    @apply bg-transparent w-10 h-10 rounded-full flex items-center justify-center;
+  }
+
+  .btn-icon svg {
+    @apply text-gray-light;
+  }
+
+  .btn-icon:hover {
+    @apply bg-blue;
+  }
+
+  .btn-icon:hover svg {
+    @apply text-white;
+  }
+}
