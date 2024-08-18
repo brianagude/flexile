@@ -1,8 +1,14 @@
-const ArrowRight = () => {
+interface ArrowRightProps {
+  onClick?: () => void;
+  className?: string;
+}
+
+const ArrowRight: React.FC<ArrowRightProps> = ({ onClick, className }) => {
   return (
-    <div className='btn-icon'>
+    <div className={`btn-icon ${className}`}>
       <svg 
         width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+        onClick={onClick}
       >
         <path 
           d="M5 12H19M19 12L12 5M19 12L12 19"

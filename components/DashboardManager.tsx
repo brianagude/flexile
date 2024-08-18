@@ -9,7 +9,7 @@ import Timer from './Timer';
 import WeeklyTaskTable from './WeeklyTaskTable';
 
 const DashboardManager = () => {
-  const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [currentWeek, setCurrentWeek] = useState(startOfWeek(new Date()));
   const [currentMonth, setCurrentMonth] = useState<string>('');
   const [totalMonthTime, setTotalMonthTime] = useState<number>(0);
   const hourlyRate = 100;
@@ -44,15 +44,17 @@ const DashboardManager = () => {
   }, []);
 
   return (
-    <>
-      <DashboardHeader currentMonth={currentMonth} />
-      <div className='tracking-wrapper'>
+  <>
+    <DashboardHeader currentMonth={currentWeek.toLocaleString('default', { month: 'long' })} />
+    <div className="flex flex-col gap-4 p-4 md:p-6 lg:p-16 xl:grid xl:grid-cols-2 xl:grid-rows-[auto_1fr]">
+      <div className="xl:row-span-2 flex flex-col">
         <Stats totalMonthTime={totalMonthTime} hourlyRate={hourlyRate} />
-        <Timer />
-        <WeeklyTaskTable currentWeek={currentWeek} setCurrentWeek={setCurrentWeek} />
       </div>
-    </>
-  );
+      <Timer />
+      <WeeklyTaskTable currentWeek={currentWeek} setCurrentWeek={setCurrentWeek} />
+    </div>
+  </>
+);
 };
 
 export default DashboardManager;

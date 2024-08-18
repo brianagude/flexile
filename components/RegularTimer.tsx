@@ -52,30 +52,39 @@ const RegularTimer = () => {
   };
 
   return (
-    <div className='timer regular-timer'>
-      <div className='countdown-button'>
-        <div className='countdown' aria-live="polite">{formatTime(time)}</div>
-        <button onClick={toggleTimer} disabled={!taskId} className='timer-btn' aria-label={isActive ? 'Stop Timer' : 'Start Timer'}>
-          {isActive ? 'Stop' : 'Start'}
-        </button>
+  <div className='border border-gray rounded-2xl p-4 md:p-6 mt-3 md:mt-4'>
+    <div className='grid grid-cols-2 gap-3 items-center'>
+      <div className='font-bold text-2xl leading-none capitalize text-center'>
+        <span className='block' aria-live="polite">{formatTime(time)}</span>
+        <span className='block text-gray text-xs font-bold mt-1'>Time</span>
       </div>
-
-      <input
-        type="text"
-        placeholder="What are you working on?"
-        list="tasks"
-        value={taskInput}
-        onChange={handleTaskInputChange}
-        onBlur={handleTaskInputBlur}
-        aria-label="Current task"
-      />
-      <datalist id="tasks">
-        {tasks.map((task: Task) => (
-          <option key={task.id} value={task.name} />
-        ))}
-      </datalist>
+      <button 
+        onClick={toggleTimer} 
+        disabled={!taskId} 
+        className='text-black text-sm capitalize rounded border border-gray py-3 px-3 hover:bg-gray-light disabled:bg-gray-lightest disabled:border-gray-med disabled:text-gray disabled:cursor-not-allowed'
+        aria-label={isActive ? 'Stop Timer' : 'Start Timer'}
+      >
+        {isActive ? 'Stop' : 'Start'}
+      </button>
     </div>
-  );
+
+    <input
+      type="text"
+      placeholder="What are you working on?"
+      list="tasks"
+      value={taskInput}
+      onChange={handleTaskInputChange}
+      onBlur={handleTaskInputBlur}
+      aria-label="Current task"
+      className='mt-3 w-full rounded border border-gray p-3'
+    />
+    <datalist id="tasks">
+      {tasks.map((task: Task) => (
+        <option key={task.id} value={task.name} />
+      ))}
+    </datalist>
+  </div>
+);
 };
 
 export default RegularTimer;
