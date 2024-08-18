@@ -24,6 +24,9 @@ export const useTaskManager = () => {
         if (newTask) {
           setTaskId(newTask.id);
           console.log("New task created:", newTask);
+        } else {
+          console.error("Failed to create new task");
+          // Optionally, show an error message to the user
         }
       }
     } else {

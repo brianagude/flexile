@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { startOfWeek, format, getMonth, getYear } from 'date-fns';
 import DashboardHeader from './DashboardHeader';
@@ -37,11 +37,11 @@ const DashboardManager = () => {
     setTotalMonthTime(totalTime);
   }, [currentWeek, tasks]);
 
-  const formatTime = (timeInSeconds: number): string => {
+  const formatTime = useMemo(() => (timeInSeconds: number): string => {
     const hours = Math.floor(timeInSeconds / 3600);
     const minutes = Math.floor((timeInSeconds % 3600) / 60);
     return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m`;
-  };
+  }, []);
 
   return (
     <>

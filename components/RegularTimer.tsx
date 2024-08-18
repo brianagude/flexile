@@ -17,15 +17,15 @@ const RegularTimer = () => {
     }
   };
 
-  const resetTimer = () => {
-    setTime(0);
-    setIsActive(false);
-  };
-
   const logTime = useCallback(() => {
     if (taskId && time > 0) {
+      const currentDate = new Date().toISOString().split('T')[0];
       addTimeToTask(taskId, time, 'Regular');
-      resetTimer();
+      console.log(`Logging ${time} seconds for task ${taskId} on ${currentDate}`);
+      setTime(0);
+      setIsActive(false);
+    } else if (!taskId) {
+      console.error('No task selected');
     }
   }, [taskId, time, addTimeToTask]);
 
@@ -33,7 +33,7 @@ const RegularTimer = () => {
     let interval: NodeJS.Timeout | undefined;
     if (isActive) {
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
+        setTime((prevTime) => Math.max(prevTime + 1, 0));
       }, 1000);
     } else if (!isActive && time > 0) {
       logTime();
@@ -55,10 +55,10 @@ const RegularTimer = () => {
   return (
     <div className='timer regular-timer'>
       <div className='countdown-button'>
-        <div className='countdown'>{formatTime(time)}</div>
-          <button onClick={toggleTimer} disabled={!taskId} className='timer-btn'>
-            {isActive ? 'Stop' : 'Start'}
-          </button>
+        <div className='countdown' aria-live="polite">{formatTime(time)}</div>
+        <button onClick={toggleTimer} disabled={!taskId} className='timer-btn' aria-label={isActive ? 'Stop Timer' : 'Start Timer'}>
+          {isActive ? 'Stop' : 'Start'}
+        </button>
       </div>
 
       <input
@@ -68,6 +68,7 @@ const RegularTimer = () => {
         value={taskInput}
         onChange={handleTaskInputChange}
         onBlur={handleTaskInputBlur}
+        aria-label="Current task"
       />
       <datalist id="tasks">
         {tasks.map((task: Task) => (

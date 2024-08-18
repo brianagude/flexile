@@ -1,7 +1,7 @@
 "use client";
 
 import { useTaskContext } from '../context/TaskContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { addDays, format } from 'date-fns';
 import ArrowRight from '@/components/icon-arrow-right';
 import ArrowLeft from '@/components/icon-arrow-left';
@@ -13,6 +13,13 @@ const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) 
   const [newTaskName, setNewTaskName] = useState<string>('');
   const [newTaskLogs, setNewTaskLogs] = useState<NewTaskLogs>({});
   const [inputErrors, setInputErrors] = useState<InputErrors>({});
+
+  useEffect(() => {
+    // This effect will run whenever tasks are updated
+    console.log('Tasks updated:', tasks);
+    // Force re-render
+    setInputErrors((prevErrors) => ({ ...prevErrors }));
+  }, [tasks]);
 
   const getWeekDays = (startDate: Date): Date[] => {
     return Array.from({ length: 7 }).map((_, index) => addDays(startDate, index));
@@ -30,8 +37,15 @@ const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) 
   };
 
   const handleTimeBlur = (id: string, date: string, newTime: string, currentName: string) => {
-    const timeParts = newTime.split(':');
     const inputKey = `${id}-${date}`;
+
+    if (newTime.trim() === '') {
+      updateTask(id, currentName, date, 0);
+      setInputErrors((prev) => ({ ...prev, [inputKey]: false }));
+      return;
+    }
+
+    const timeParts = newTime.split(':');
 
     if (timeParts.length === 2 && timeParts.every((part) => /^\d+$/.test(part))) {
       const [hours, minutes] = timeParts;
@@ -48,6 +62,21 @@ const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) 
     }
   };
 
+  const handleTimeChange = (id: string, date: string, newTime: string, currentName: string) => {
+    const timeParts = newTime.split(':');
+    if (timeParts.length === 2 && timeParts.every((part) => /^\d+$/.test(part))) {
+      const [hours, minutes] = timeParts;
+      const newTimeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+      if (!isNaN(newTimeInSeconds)) {
+        const task = tasks.find(t => t.id === id);
+        const existingInstance = task?.workInstances.find(i => i.startTime.startsWith(date));
+        const existingTime = existingInstance ? existingInstance.duration : 0;
+        const updatedTime = existingTime + newTimeInSeconds;
+        updateTask(id, currentName, date, updatedTime);
+      }
+    }
+  };
+
   const handleNewTaskChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTaskName(e.target.value);
   };
@@ -58,23 +87,30 @@ const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) 
 
   const addNewTask = () => {
     if (newTaskName.trim() !== '') {
-      const taskId = Date.now().toString();
-      const newTask = addTask(newTaskName);
+      try {
+        const newTask = addTask(newTaskName);
 
-      if (newTask) {
-        Object.keys(newTaskLogs).forEach((date) => {
-          const timeParts = newTaskLogs[date].split(':');
-          if (timeParts.length === 2 && timeParts.every((part) => /^\d+$/.test(part))) {
-            const [hours, minutes] = timeParts;
-            const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
-            if (!isNaN(timeInSeconds)) {
-              updateTask(taskId, newTaskName, date, timeInSeconds);
+        if (newTask) {
+          Object.keys(newTaskLogs).forEach((date) => {
+            const timeParts = newTaskLogs[date].split(':');
+            if (timeParts.length === 2 && timeParts.every((part) => /^\d+$/.test(part))) {
+              const [hours, minutes] = timeParts;
+              const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+              if (!isNaN(timeInSeconds)) {
+                updateTask(newTask.id, newTaskName, date, timeInSeconds);
+              }
             }
-          }
-        });
+          });
 
-        setNewTaskName('');
-        setNewTaskLogs({});
+          setNewTaskName('');
+          setNewTaskLogs({});
+        } else {
+          console.error('Failed to create new task');
+          // Optionally, show an error message to the user
+        }
+      } catch (error) {
+        console.error('Error creating new task:', error);
+        // Optionally, show an error message to the user
       }
     }
   };
@@ -132,11 +168,10 @@ const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) 
                     <input
                       type="text"
                       placeholder="HH:MM"
-                      defaultValue={timeValue}
+                      value={timeValue}
                       className={inputClass}
-                      onBlur={(e) =>
-                        handleTimeBlur(task.id, date, e.target.value, task.name)
-                      }
+                      onChange={(e) => handleTimeChange(task.id, date, e.target.value, task.name)}
+                      onBlur={(e) => handleTimeBlur(task.id, date, e.target.value, task.name)}
                     />
                   </td>
                 );
