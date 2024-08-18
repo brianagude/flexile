@@ -13,10 +13,11 @@ export interface Task {
 
 export interface TaskContextType {
   tasks: Task[];
-  addTimeToTask: (taskId: string, timeSpent: number, timerType: 'Pomodoro' | 'Regular') => void;
   addTask: (name: string) => Task | null;
+  addTimeToTask: (taskId: string, time: number, timerType: 'Pomodoro' | 'Regular') => void;
   updateTask: (id: string, name: string, date: string, time: number) => void;
   deleteTask: (id: string) => void;
+  updateTaskTime: (taskId: string, date: string, time: number) => void;
 }
 
 export interface WeeklyTaskTableProps {

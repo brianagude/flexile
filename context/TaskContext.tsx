@@ -23,32 +23,32 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addTimeToTask = (taskId: string, time: number, timerType: 'Pomodoro' | 'Regular') => {
-  const currentDate = new Date().toISOString().split('T')[0];
-  setTasks((prevTasks) =>
-    prevTasks.map((task) => {
-      if (task.id === taskId) {
-        const existingWorkInstance = task.workInstances.find((instance) =>
-          instance.startTime.startsWith(currentDate)
-        );
+    const currentDate = new Date().toISOString().split('T')[0];
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => {
+        if (task.id === taskId) {
+          const existingWorkInstance = task.workInstances.find((instance) =>
+            instance.startTime.startsWith(currentDate)
+          );
 
-        if (existingWorkInstance) {
-          existingWorkInstance.duration += time;
-        } else {
-          task.workInstances.push({
-            startTime: `${currentDate}T00:00:00`,
-            duration: time,
-            timerType,
-          });
+          if (existingWorkInstance) {
+            existingWorkInstance.duration += time;
+          } else {
+            task.workInstances.push({
+              startTime: `${currentDate}T00:00:00`,
+              duration: time,
+              timerType,
+            });
+          }
+
+          task.totalTime = task.workInstances.reduce((acc, instance) => acc + instance.duration, 0);
+
+          console.log(`Added ${time} seconds to task ${task.name} for ${currentDate}. New total: ${task.totalTime}`);
         }
-
-        task.totalTime = task.workInstances.reduce((acc, instance) => acc + instance.duration, 0);
-
-        console.log(`Added ${time} seconds to task ${task.name} for ${currentDate}. New total: ${task.totalTime}`);
-      }
-      return task;
-    })
-  );
-};
+        return task;
+      })
+    );
+  };
 
   const updateTask = (id: string, name: string, date: string, time: number) => {
   setTasks((prevTasks) =>
@@ -82,8 +82,33 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
 
+  const updateTaskTime = (taskId: string, date: string, time: number) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => {
+        if (task.id === taskId) {
+          const existingWorkInstance = task.workInstances.find((instance) =>
+            instance.startTime.startsWith(date)
+          );
+
+          if (existingWorkInstance) {
+            existingWorkInstance.duration = time;
+          } else {
+            task.workInstances.push({
+              startTime: `${date}T00:00:00`,
+              duration: time,
+              timerType: 'Regular',
+            });
+          }
+
+          task.totalTime = task.workInstances.reduce((acc, instance) => acc + instance.duration, 0);
+        }
+        return task;
+      })
+    );
+  };
+
   return (
-    <TaskContext.Provider value={{ tasks, addTask, addTimeToTask, updateTask, deleteTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, addTimeToTask, updateTask, deleteTask, updateTaskTime }}>
       {children}
     </TaskContext.Provider>
   );

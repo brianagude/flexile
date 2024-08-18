@@ -19,9 +19,8 @@ const RegularTimer = () => {
 
   const logTime = useCallback(() => {
     if (taskId && time > 0) {
-      const currentDate = new Date().toISOString().split('T')[0];
       addTimeToTask(taskId, time, 'Regular');
-      console.log(`Logging ${time} seconds for task ${taskId} on ${currentDate}`);
+      console.log(`Logging ${time} seconds for task ${taskId}`);
       setTime(0);
       setIsActive(false);
     } else if (!taskId) {

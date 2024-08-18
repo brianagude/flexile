@@ -9,10 +9,11 @@ import Trash from '@/components/icon-trash';
 import { Task, WeeklyTaskTableProps, InputErrors, NewTaskLogs } from '@/types';
 
 const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) => {
-  const { tasks, updateTask, addTask, deleteTask } = useTaskContext();
+  const { tasks, updateTask, addTask, deleteTask, updateTaskTime } = useTaskContext();
   const [newTaskName, setNewTaskName] = useState<string>('');
   const [newTaskLogs, setNewTaskLogs] = useState<NewTaskLogs>({});
   const [inputErrors, setInputErrors] = useState<InputErrors>({});
+  const [editingValues, setEditingValues] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     // This effect will run whenever tasks are updated
@@ -62,19 +63,31 @@ const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) 
     }
   };
 
-  const handleTimeChange = (id: string, date: string, newTime: string, currentName: string) => {
-    const timeParts = newTime.split(':');
+  const handleTimeChange = (id: string, date: string, newValue: string) => {
+    const inputKey = `${id}-${date}`;
+    setEditingValues(prev => ({ ...prev, [inputKey]: newValue }));
+  };
+
+  const handleTimeSubmit = (id: string, date: string, newValue: string) => {
+    const timeParts = newValue.split(':');
     if (timeParts.length === 2 && timeParts.every((part) => /^\d+$/.test(part))) {
       const [hours, minutes] = timeParts;
-      const newTimeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
-      if (!isNaN(newTimeInSeconds)) {
-        const task = tasks.find(t => t.id === id);
-        const existingInstance = task?.workInstances.find(i => i.startTime.startsWith(date));
-        const existingTime = existingInstance ? existingInstance.duration : 0;
-        const updatedTime = existingTime + newTimeInSeconds;
-        updateTask(id, currentName, date, updatedTime);
+      const timeInSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60;
+      if (!isNaN(timeInSeconds)) {
+        updateTaskTime(id, date, timeInSeconds);
+        setInputErrors(prev => ({ ...prev, [`${id}-${date}`]: false }));
+      } else {
+        setInputErrors(prev => ({ ...prev, [`${id}-${date}`]: true }));
       }
+    } else {
+      setInputErrors(prev => ({ ...prev, [`${id}-${date}`]: true }));
     }
+    // Clear the editing value
+    setEditingValues(prev => {
+      const newValues = { ...prev };
+      delete newValues[`${id}-${date}`];
+      return newValues;
+    });
   };
 
   const handleNewTaskChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,9 +171,10 @@ const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) 
                 const log = task.workInstances.find((instance) =>
                   instance.startTime.startsWith(date)
                 );
-                const timeValue = log ? formatTime(log.duration) : '';
+                const timeValue = log ? formatTime(log.duration) : '00:00';
                 const inputKey = `${task.id}-${date}`;
                 const inputClass = inputErrors[inputKey] ? 'error' : '';
+                const editingValue = editingValues[inputKey];
 
                 return (
                   <td key={day.toISOString()}>
@@ -168,10 +182,15 @@ const WeeklyTaskTable = ({ currentWeek, setCurrentWeek }: WeeklyTaskTableProps) 
                     <input
                       type="text"
                       placeholder="HH:MM"
-                      value={timeValue}
+                      value={editingValue !== undefined ? editingValue : timeValue}
                       className={inputClass}
-                      onChange={(e) => handleTimeChange(task.id, date, e.target.value, task.name)}
-                      onBlur={(e) => handleTimeBlur(task.id, date, e.target.value, task.name)}
+                      onChange={(e) => handleTimeChange(task.id, date, e.target.value)}
+                      onBlur={(e) => handleTimeSubmit(task.id, date, e.target.value)}
+                      onFocus={(e) => {
+                        if (!editingValues[inputKey]) {
+                          setEditingValues(prev => ({ ...prev, [inputKey]: timeValue }));
+                        }
+                      }}
                     />
                   </td>
                 );

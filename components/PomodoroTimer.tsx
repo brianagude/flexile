@@ -8,40 +8,35 @@ import { Task } from '@/types';
 const PomodoroTimer = () => {
   const { addTimeToTask } = useTaskContext();
   const { taskId, taskInput, handleTaskInputChange, handleTaskInputBlur, tasks } = useTaskManager();
-  const [time, setTime] = useState(1500);
+  const [time, setTime] = useState(1500); // 25 minutes in seconds
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout>();
   const startTimeRef = useRef<number>();
 
   const logTime = useCallback(() => {
-    if (taskId && time > 0) {
-      const currentDate = new Date().toISOString().split('T')[0];
-      addTimeToTask(taskId, time, 'Pomodoro');
-      console.log(`Logging ${time} seconds for task ${taskId} on ${currentDate}`);
-      setTime(0);
-      setIsActive(false);
+    if (taskId && startTimeRef.current) {
+      const elapsedTime = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      addTimeToTask(taskId, elapsedTime, 'Pomodoro');
+      console.log(`Logging ${elapsedTime} seconds for task ${taskId}`);
+      setTime(isBreak ? 300 : 1500); // Reset to 5 or 25 minutes
+      startTimeRef.current = undefined;
     } else if (!taskId) {
       console.error('No task selected');
     }
-  }, [taskId, time, addTimeToTask]);
+  }, [taskId, isBreak, addTimeToTask]);
 
   const toggleTimer = useCallback(() => {
     setIsActive((prevIsActive) => {
       if (prevIsActive) {
-        if (!isBreak) {
-          logTime();
-        }
-        setIsBreak((prevIsBreak) => {
-          setTime(prevIsBreak ? 1500 : 300);
-          return !prevIsBreak;
-        });
+        logTime();
+        setIsBreak((prevIsBreak) => !prevIsBreak);
       } else {
         startTimeRef.current = Date.now();
       }
       return !prevIsActive;
     });
-  }, [isBreak, logTime]);
+  }, [logTime]);
 
   useEffect(() => {
     if (isActive) {
@@ -50,17 +45,9 @@ const PomodoroTimer = () => {
           if (prevTime <= 1) {
             clearInterval(intervalRef.current);
             setIsActive(false);
-            if (isBreak) {
-              // Use a more user-friendly notification method here
-              console.log('Break over! Time to get back to work.');
-              setIsBreak(false);
-              return 1500;
-            } else {
-              console.log('Pomodoro session over! Time for a break.');
-              logTime();
-              setIsBreak(true);
-              return 300;
-            }
+            logTime();
+            setIsBreak((prevIsBreak) => !prevIsBreak);
+            return isBreak ? 1500 : 300; // Switch to 25 or 5 minutes
           }
           return prevTime - 1;
         });
